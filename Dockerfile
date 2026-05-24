@@ -1,5 +1,5 @@
-# Base image (lightweight Node.js alpine)
-FROM node:22-alpine
+# Base image (lightweight Node.js Debian-slim with glibc support)
+FROM node:22-slim
 
 WORKDIR /app
 
