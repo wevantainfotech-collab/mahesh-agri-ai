@@ -7,6 +7,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { getShopBySlug } from "@/lib/shop.functions";
 import { askAi } from "@/lib/chat.functions";
 import { supabase } from "@/integrations/supabase/client";
+const safeUUID = () => {
+  if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
 
 export const Route = createFileRoute("/$slug")({
   loader: async ({ params }) => {
@@ -127,7 +133,7 @@ function ChatPage() {
     if (!file.type.startsWith("image/")) { toast.error("Only image files"); return; }
     setPendingImage({ url: "", uploading: true });
     const ext = file.name.split(".").pop() || "jpg";
-    const path = `chat-images/${shop.id}/${crypto.randomUUID()}.${ext}`;
+    const path = `chat-images/${shop.id}/${safeUUID()}.${ext}`;
     const { error } = await supabase.storage.from("shop-assets").upload(path, file, { contentType: file.type, upsert: false });
     if (error) { toast.error("Upload failed"); setPendingImage(null); return; }
     const { data } = supabase.storage.from("shop-assets").getPublicUrl(path);
@@ -139,7 +145,7 @@ function ChatPage() {
     if (!text && !pendingImage?.url) return;
     if (pendingImage?.uploading) { toast.message("Image still uploading…"); return; }
 
-    const userMsg: Message = { id: crypto.randomUUID(), role: "user", text, imageUrl: pendingImage?.url };
+    const userMsg: Message = { id: safeUUID(), role: "user", text, imageUrl: pendingImage?.url };
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setPendingImage(null);
@@ -147,7 +153,7 @@ function ChatPage() {
 
     try {
       const res = await ask({ data: { shopId: shop.id, question: text, imageUrl: userMsg.imageUrl } });
-      setMessages((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: res.response }]);
+      setMessages((m) => [...m, { id: safeUUID(), role: "assistant", text: res.response }]);
     } catch (e: any) {
       toast.error(e?.message ?? "Something went wrong");
     } finally {
