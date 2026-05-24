@@ -20,5 +20,5 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Start the application using Wrangler local runtime
-CMD ["npx", "wrangler", "dev", "--config", "dist/server/wrangler.json", "--ip", "0.0.0.0", "--port", "3000"]
+# Start the application using start.js script to bridge environment variables
+CMD ["node", "start.js"]
