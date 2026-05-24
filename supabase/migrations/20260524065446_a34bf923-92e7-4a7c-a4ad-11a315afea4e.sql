@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can read shop-assets" ON storage.objects;
