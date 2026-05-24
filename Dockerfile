@@ -1,6 +1,9 @@
 # Base image (lightweight Node.js Debian-slim with glibc support)
 FROM node:22-slim
 
+# Install CA certificates to enable trusted HTTPS requests inside the container
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Install dependencies
